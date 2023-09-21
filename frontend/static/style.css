@@ -8,3 +8,14 @@ body {
 strong {
     color: #ea461e;
 }
+
+.button {
+    background: #ea461e;
+    border: 0;
+    color: white;
+    padding: 12px 48px;
+    font-size: 18px;
+    margin-top: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
