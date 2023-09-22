@@ -2,12 +2,11 @@ import aiohttp
 
 API_ENDPOINT = "https://discord.com/api"
 
-session = aiohttp.ClientSession()
-
 
 async def get_token_response(data):
-    response = await session.post(API_ENDPOINT + "/oauth2/token", data=data)
-    json_response = await response.json()
+    async with aiohttp.ClientSession() as session:
+        response = await session.post(API_ENDPOINT + "/oauth2/token", data=data)
+        json_response = await response.json()
 
     access_token = json_response.get("access_token")
     refresh_token = json_response.get("refresh_token")
