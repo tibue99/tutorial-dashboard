@@ -1,1 +1,2 @@
-from . import api
+from .api import DiscordAuth
+from .database import db

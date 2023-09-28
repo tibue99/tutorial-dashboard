@@ -9,6 +9,43 @@ strong {
     color: #ea461e;
 }
 
+.container {
+    display: flex;
+    justify-content: center;
+    align-content: flex-start;
+    flex-wrap: wrap;
+    margin: 2rem 2% 3rem;
+}
+
+.item {
+    margin: .85rem;
+    width: 400px;
+    min-width: 300px;
+    height: 100px;
+    border-radius: .75rem;
+    font-size: 2rem;
+    overflow: hidden;
+    background-color: #3a4242;
+    display: flex;
+    align-items: center;
+}
+
+.item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 .2rem .5rem rgba(0,0,0,0.3), 0 1rem .5rem rgba(0,0,0,0.22)
+}
+
+.title {
+    margin-right: .7rem;
+    height: 80%;
+    font-size: 70%;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    text-align: left;
+    border-radius: 50%;
+}
+
 .button {
     background: #ea461e;
     border: 0;
