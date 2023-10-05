@@ -1,3 +1,4 @@
+import discord
 import uvicorn
 from discord.ext.ipc import Client
 from fastapi import FastAPI, Request, HTTPException
@@ -70,7 +71,7 @@ async def callback(code: str):
 @app.get("/guilds")
 async def guilds(request: Request):
     session_id = request.cookies.get("session_id")
-    if not session_id:
+    if not session_id or not await db.get_session(session_id):
         raise HTTPException(status_code=401, detail="no auth")
 
     session = await db.get_session(session_id)
@@ -79,12 +80,45 @@ async def guilds(request: Request):
     user = await api.get_user(token)
     user_guilds = await api.get_guilds(token)
 
+    perms = []
+
+    for guild in user_guilds:
+        guild["url"] = "/server/" + str(guild["id"])
+
+        if guild["icon"]:
+            guild["icon"] = "https://cdn.discordapp.com/icons/" + guild["id"] + "/" + guild["icon"]
+        else:
+            guild["icon"] = "https://cdn.discordapp.com/embed/avatars/0.png"
+
+        is_admin = discord.Permissions(int(guild["permissions"])).administrator
+        if is_admin or guild["owner"]:
+            perms.append(guild)
+
     return templates.TemplateResponse(
         "guilds.html",
         {
             "request": request,
             "global_name": user["global_name"],
-            "guilds": user_guilds
+            "guilds": perms
+        }
+    )
+
+
+@app.get("/server/{guild_id}")
+async def server(request: Request, guild_id: int):
+    session_id = request.cookies.get("session_id")
+    if not session_id or not await db.get_session(session_id):
+        raise HTTPException(status_code=401, detail="no auth")
+
+    stats = await ipc.request("guild_stats", guild_id=guild_id)
+
+    return templates.TemplateResponse(
+        "server.html",
+        {
+            "request": request,
+            "name": stats.response["name"],
+            "count": stats.response["member_count"],
+            "id": guild_id,
         }
     )
 

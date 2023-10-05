@@ -12,10 +12,12 @@
 
     <div class="container">
         {% for guild in guilds %}
-            <div class="item">
-                <img class="title" src="https://cdn.discordapp.com/embed/avatars/0.png">
-                <p class="title"> <b>{{ guild.name }}</b> </p>
-            </div>
+            <a href={{guild.url}} class="link">
+                <div class="item">
+                    <img class="title" src="{{guild.icon}}">
+                    <p class="title"> <b>{{ guild.name }}</b> </p>
+                </div>
+            </a>
         {% endfor %}
     </div>
 

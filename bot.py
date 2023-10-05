@@ -1,6 +1,6 @@
 import discord
 import ezcord
-from discord.ext.ipc import Server
+from discord.ext.ipc import Server, ClientPayload
 
 
 class Bot(ezcord.Bot):
@@ -16,7 +16,21 @@ class Bot(ezcord.Bot):
     async def guild_count(self, _):
         return str(len(self.guilds))
 
-    async def on_ipc_error(self, endpoint: str, exc: Exception):
+    @Server.route()
+    async def guild_stats(self, data: ClientPayload):
+        guild = self.get_guild(data.guild_id)
+        if not guild:
+            return {
+                "member_count": 69,
+                "name": "Unbekannt"
+            }
+
+        return {
+            "member_count": guild.member_count,
+            "name": guild.name,
+        }
+
+    async def on_ipc_error(self, endpoint: str, exc: Exception) -> None:
         raise exc
 
 

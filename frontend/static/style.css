@@ -56,3 +56,9 @@ strong {
     border-radius: 8px;
     cursor: pointer;
 }
+
+.link {
+    text-decoration: none;
+    color: inherit;
+    display: inline-block;
+}
