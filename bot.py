@@ -17,6 +17,11 @@ class Bot(ezcord.Bot):
         return str(len(self.guilds))
 
     @Server.route()
+    async def bot_guilds(self, _):
+        guild_ids = [str(guild.id) for guild in self.guilds]
+        return {"data": guild_ids}
+
+    @Server.route()
     async def guild_stats(self, data: ClientPayload):
         guild = self.get_guild(data.guild_id)
         if not guild:

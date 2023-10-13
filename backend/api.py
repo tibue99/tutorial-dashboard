@@ -14,6 +14,8 @@ class DiscordAuth:
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
 
+        self.auth = aiohttp.BasicAuth(str(client_id), client_secret)
+
     async def setup(self):
         self.session = aiohttp.ClientSession()
 
@@ -39,3 +41,12 @@ class DiscordAuth:
             return None
 
         return access_token, refresh_token, expires_in
+
+    async def revoke_token(self, token):
+        async with self.session.post(
+                API_ENDPOINT + "/oauth2/token/revoke",
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+                data={"token": token},
+                auth=self.auth
+        ) as response:
+            response.raise_for_status()

@@ -32,10 +32,13 @@ class DashboardDB(ezcord.DBHandler):
 
     async def get_session(self, session_id):
         return await self.one(
-            "SELECT token, refresh_token, token_expires_at, user_id FROM sessions WHERE session_id = ?",
+            "SELECT token, refresh_token, token_expires_at FROM sessions WHERE session_id = ?",
             session_id,
             detect_types=1
         )
+
+    async def delete_session(self, session_id):
+        await self.exec("DELETE FROM sessions WHERE session_id = ?", session_id)
 
 
 db = DashboardDB()
