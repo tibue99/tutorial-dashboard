@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import discord
 import uvicorn
 from discord.ext.ipc import Client
@@ -83,6 +85,12 @@ async def guilds(request: Request):
     token, refresh_token, token_expires_at = session
 
     user = await api.get_user(token)
+    if datetime.now() > token_expires_at or user.get("code") == 0:
+        if await api.reload(session_id, refresh_token):
+            RedirectResponse(url="/guilds")
+        else:
+            RedirectResponse(url="/logout")
+
     if "id" not in user:
         return RedirectResponse(url="/logout")
 
@@ -135,10 +143,11 @@ async def server(request: Request, guild_id: int):
 
 @app.get("/logout")
 async def logout(session_id: str = Cookie(None)):
-    if not session_id:
+    session = await db.get_session(session_id)
+    if not session_id or not session:
         raise HTTPException(status_code=401, detail="no auth")
 
-    token, _, _ = await db.get_session(session_id)
+    token, _, _ = session
 
     response = RedirectResponse("/")
     response.delete_cookie(key="session_id", httponly=True)

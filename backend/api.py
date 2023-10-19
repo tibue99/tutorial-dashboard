@@ -1,4 +1,9 @@
+from datetime import datetime, timedelta
+
 import aiohttp
+from fastapi import HTTPException
+
+from .database import db
 
 API_ENDPOINT = "https://discord.com/api"
 
@@ -27,6 +32,8 @@ class DiscordAuth:
     async def get_guilds(self, token):
         headers = {"Authorization": f"Bearer {token}"}
         async with self.session.get(API_ENDPOINT + "/users/@me/guilds", headers=headers) as response:
+            if response.status == 429:
+                raise HTTPException(status_code=429)
             return await response.json()
 
     async def get_token_response(self, data):
@@ -50,3 +57,20 @@ class DiscordAuth:
                 auth=self.auth
         ) as response:
             response.raise_for_status()
+
+    async def reload(self, session_id, refresh_token):
+        data = {
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "grant_type": "refresh_token",
+            "refresh_token": refresh_token
+        }
+        response = await self.get_token_response(data)
+        if not response:
+            return False
+
+        new_token, new_refresh_token, expires_in = response
+        expire_dt = datetime.now() + timedelta(seconds=expires_in)
+
+        await db.update_session(session_id, new_token, new_refresh_token, expire_dt)
+        return True
