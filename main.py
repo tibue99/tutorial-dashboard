@@ -8,7 +8,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 
-from backend import DiscordAuth, db
+from backend import DiscordAuth, db, feature_db
 
 
 # Hier die Daten aus dem Developer-Portal einfügen
@@ -31,6 +31,7 @@ api = DiscordAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
 async def on_startup():
     await api.setup()
     await db.setup()
+    await feature_db.setup()
 
 
 @app.get("/")
@@ -130,6 +131,12 @@ async def server(request: Request, guild_id: int):
         raise HTTPException(status_code=401, detail="no auth")
 
     stats = await ipc.request("guild_stats", guild_id=guild_id)
+    setting = await feature_db.get_setting(guild_id, "example_feature")
+    if setting:
+        feature_txt = "Das Feature ist aktiviert"
+    else:
+        feature_txt = "Das Feature ist deaktiviert"
+
     return templates.TemplateResponse(
         "server.html",
         {
@@ -137,8 +144,24 @@ async def server(request: Request, guild_id: int):
             "name": stats.response["name"],
             "count": stats.response["member_count"],
             "id": guild_id,
+            "feature": feature_txt,
         }
     )
+
+
+@app.get("/server/{guild_id}/settings/{feature}")
+async def change_settings(guild_id: int, feature: str, session_id: str = Cookie(None)):
+    user_id = await db.get_user_id(session_id)
+    if not session_id or not user_id:
+        raise HTTPException(status_code=401, detail="no auth")
+
+    perms = await ipc.request("check_perms", guild_id=guild_id, user_id=user_id)
+
+    if perms.response["perms"]:
+        await feature_db.toggle_setting(guild_id, feature)
+        return RedirectResponse(url="/server/" + str(guild_id))
+    else:
+        return {"error": "Du hast keinen Zugriff auf diesen Server"}
 
 
 @app.get("/logout")

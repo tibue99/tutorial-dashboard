@@ -37,6 +37,9 @@ class DashboardDB(ezcord.DBHandler):
             detect_types=1
         )
 
+    async def get_user_id(self, session_id):
+        return await self.one("SELECT user_id FROM sessions WHERE session_id=?", session_id)
+
     async def update_session(self, session_id, token, refresh_token, token_expires_at):
         await self.exec(
             "UPDATE sessions SET token = ?, refresh_token = ?, token_expires_at = ? WHERE session_id = ?",
@@ -48,4 +51,27 @@ class DashboardDB(ezcord.DBHandler):
         await self.exec("DELETE FROM sessions WHERE session_id = ?", session_id)
 
 
+class FeatureDB(ezcord.DBHandler):
+    def __init__(self):
+        super().__init__("dashboard.db")
+
+    async def setup(self):
+        await self.exec(
+            """CREATE TABLE IF NOT EXISTS settings (
+            guild_id INTEGER PRIMARY KEY,
+            example_feature INTEGER DEFAULT 0
+            )"""
+        )
+
+    async def get_setting(self, guild_id, feature):
+        return await self.one(f"SELECT {feature} FROM settings WHERE guild_id=?", guild_id)
+
+    async def toggle_setting(self, guild_id, feature):
+        await self.exec("INSERT OR IGNORE INTO settings (guild_id) VALUES (?)", guild_id)
+        await self.exec(
+            f"UPDATE settings SET {feature} = NOT {feature} WHERE guild_id = ?", guild_id
+        )
+
+
 db = DashboardDB()
+feature_db = FeatureDB()
