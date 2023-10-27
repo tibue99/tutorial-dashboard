@@ -16,6 +16,7 @@ Das Dashboard kann mit einer beliebigen Discord-Library verwendet werden
    ```
    http://localhost:8000/callback
    ```
-3. Füge die Daten aus dem Developer Portal in `main.py` ein
-4. Starte die Dashboard-API in `main.py` und den Bot in `bot.py`
+3. Aktiviere den **Member Intent** im Developer Portal
+4. Füge die Daten aus dem Developer Portal in `main.py` ein
+5. Starte die Dashboard-API in `main.py` und den Bot in `bot.py`
    
