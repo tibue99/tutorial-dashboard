@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import discord
+import ezcord
 import uvicorn
 from discord.ext.ipc import Client
 from fastapi import FastAPI, Request, HTTPException, Cookie
@@ -108,7 +109,7 @@ async def guilds(request: Request):
         if guild["icon"]:
             guild["icon"] = "https://cdn.discordapp.com/icons/" + guild["id"] + "/" + guild["icon"]
         else:
-            guild["icon"] = "https://cdn.discordapp.com/embed/avatars/0.png"
+            guild["icon"] = ezcord.random_avatar()
 
         is_admin = discord.Permissions(int(guild["permissions"])).administrator
         if is_admin or guild["owner"]:
