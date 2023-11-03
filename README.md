@@ -2,7 +2,7 @@
 Hier findest du den Code zum Dashboard Tutorial. Für dieses Tutorial benutzen wir [FastAPI](https://fastapi.tiangolo.com/).
 
 ## Infos
-Das Dashboard kann mit einer beliebigen Discord-Library verwendet werden 
+Das Dashboard kann mit einer beliebigen Discord-Library verwendet werden
    ([Pycord](https://github.com/Pycord-Development/pycord),
    [Discord.py](https://github.com/Rapptz/discord.py),
    [Nextcord](https://github.com/nextcord/nextcord),
@@ -23,7 +23,7 @@ Das Dashboard kann mit einer beliebigen Discord-Library verwendet werden
 ## VPS Hosting
 Das Dashboard kann zum Beispiel auf einem VPS gehostet werden. Hier ist eine kleine Übersicht für Ubuntu.
 
-**Wichtig:** Nicht vergessen den Redirect im Dev Portal und im Code anzupassen. 
+**Wichtig:** Nicht vergessen den Redirect im Dev Portal und im Code anzupassen.
 Dort steht dann nicht mehr `localhost`, sondern eure IP-Adresse oder eure Domain.
 
 Folgende Befehle werden auf dem VPS ausgeführt:
@@ -36,13 +36,13 @@ Folgende Befehle werden auf dem VPS ausgeführt:
    server {
       listen 80;
       server_name _;  # IP-Adresse oder Domain eintragen
-   
+
       location / {
          proxy_pass http://127.0.0.1:8000;
          include /etc/nginx/proxy_params;
          proxy_redirect off;
       }
-   
+
       location /static {
          alias /home/dashboard/frontend/static;
       }

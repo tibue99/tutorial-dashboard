@@ -4,13 +4,12 @@ import discord
 import ezcord
 import uvicorn
 from discord.ext.ipc import Client
-from fastapi import FastAPI, Request, HTTPException, Cookie
+from fastapi import Cookie, FastAPI, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 
 from backend import DiscordAuth, db, feature_db
-
 
 # Hier die Daten aus dem Developer-Portal einfügen
 CLIENT_ID = 123456789
@@ -146,7 +145,7 @@ async def server(request: Request, guild_id: int):
             "count": stats.response["member_count"],
             "id": guild_id,
             "feature": feature_txt,
-        }
+        },
     )
 
 

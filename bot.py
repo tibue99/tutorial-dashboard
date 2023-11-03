@@ -1,6 +1,6 @@
 import discord
 import ezcord
-from discord.ext.ipc import Server, ClientPayload
+from discord.ext.ipc import ClientPayload, Server
 
 
 class Bot(ezcord.Bot):

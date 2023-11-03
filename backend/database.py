@@ -34,7 +34,7 @@ class DashboardDB(ezcord.DBHandler):
         return await self.one(
             "SELECT token, refresh_token, token_expires_at FROM sessions WHERE session_id = ?",
             session_id,
-            detect_types=1
+            detect_types=1,
         )
 
     async def get_user_id(self, session_id):
@@ -44,7 +44,7 @@ class DashboardDB(ezcord.DBHandler):
         await self.exec(
             "UPDATE sessions SET token = ?, refresh_token = ?, token_expires_at = ? WHERE session_id = ?",
             (token, refresh_token, token_expires_at, session_id),
-            detect_types=1
+            detect_types=1,
         )
 
     async def delete_session(self, session_id):

@@ -31,7 +31,9 @@ class DiscordAuth:
 
     async def get_guilds(self, token):
         headers = {"Authorization": f"Bearer {token}"}
-        async with self.session.get(API_ENDPOINT + "/users/@me/guilds", headers=headers) as response:
+        async with self.session.get(
+            API_ENDPOINT + "/users/@me/guilds", headers=headers
+        ) as response:
             if response.status == 429:
                 raise HTTPException(status_code=429)
             return await response.json()
@@ -51,10 +53,10 @@ class DiscordAuth:
 
     async def revoke_token(self, token):
         async with self.session.post(
-                API_ENDPOINT + "/oauth2/token/revoke",
-                headers={"Content-Type": "application/x-www-form-urlencoded"},
-                data={"token": token},
-                auth=self.auth
+            API_ENDPOINT + "/oauth2/token/revoke",
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            data={"token": token},
+            auth=self.auth,
         ) as response:
             response.raise_for_status()
 
@@ -63,7 +65,7 @@ class DiscordAuth:
             "client_id": self.client_id,
             "client_secret": self.client_secret,
             "grant_type": "refresh_token",
-            "refresh_token": refresh_token
+            "refresh_token": refresh_token,
         }
         response = await self.get_token_response(data)
         if not response:
