@@ -8,7 +8,7 @@ from fastapi import Cookie, FastAPI, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
-
+from contextlib import asynccontextmanager
 from backend import DiscordAuth, db, feature_db
 
 # Hier die Daten aus dem Developer-Portal einfügen
@@ -18,20 +18,23 @@ REDIRECT_URI = "http://localhost:8000/callback"
 LOGIN_URL = ""
 INVITE_LINK = ""
 
+@asynccontextmanager
+async def on_startup(app: FastAPI):
+    await api.setup()
+    await db.setup()
+    await feature_db.setup()
 
-app = FastAPI()
+    yield
+
+    await api.close()
+    # Hier kann noch selbst eine Methode, die je nach Datenbank variiert, hinzugefügt werden, um die Datenbank zu "schließen"
+
+app = FastAPI(lifespan=on_startup)
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 templates = Jinja2Templates(directory="frontend")
 
 ipc = Client(secret_key="keks")
 api = DiscordAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
-
-
-@app.on_event("startup")
-async def on_startup():
-    await api.setup()
-    await db.setup()
-    await feature_db.setup()
 
 
 @app.get("/")

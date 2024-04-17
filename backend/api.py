@@ -24,6 +24,9 @@ class DiscordAuth:
     async def setup(self):
         self.session = aiohttp.ClientSession()
 
+    async def close(self):
+        await self.session.close()
+
     async def get_user(self, token):
         headers = {"Authorization": f"Bearer {token}"}
         async with self.session.get(API_ENDPOINT + "/users/@me", headers=headers) as response:
