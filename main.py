@@ -22,13 +22,14 @@ INVITE_LINK = ""
 async def on_startup(app: FastAPI):
     await api.setup()
     await db.setup()
+    await feature_db.setup()
 
     yield
 
     await api.close()
     # Hier kann noch selbst eine Methode, die je nach Datenbank variiert, hinzugefügt werden, um die Datenbank zu "schließen"
 
-app = FastAPI()
+app = FastAPI(lifespan=on_startup)
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 templates = Jinja2Templates(directory="frontend")
 
